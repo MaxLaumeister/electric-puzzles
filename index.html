@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Marble Signal</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        canvas {
+            border: solid gray 1px;
+            margin: 10px 0;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+  </head>
+  <body>
+  <h1>Level 1</h1>
+  <canvas height="500" width="500"></canvas>
+  <br>
+  <button onclick="prevLevel()">Prev Level</button>
+  <button onclick="nextLevel()">Next Level</button>
+    <script>
+    let Util = {
+        getNextCoord: function (ix, iy, orientation) {
+            if (orientation === 0) {
+                ix++;
+            } else if (orientation === 1) {
+                iy--;
+            } else if (orientation === 2) {
+                ix--;
+            } else if (orientation === 3) {
+                iy++;
+            } else {
+                throw "improper orientation";
+            }
+            return {x: ix, y: iy};
+        }
+    }
+    
+    class Grid {
+      constructor(canvas) {
+        this.c = canvas;
+        this.ctx = canvas.getContext("2d");
+        canvas.addEventListener('click', (e) => {
+          this.handleClick(e.pageX - e.currentTarget.offsetLeft, e.pageY - e.currentTarget.offsetTop);
+        });
+      }
+      
+      loadData(data) {
+        this.data = data;
+        // Update component internal positions
+        for (let i = 0; i < this.data.length; i++) {
+            let row = this.data[i];
+          for (let j = 0; j < row.length; j++) {
+            let tile = row[j];
+            if (tile) tile.setPosition(j, i);
+          }
+        }
+      }
+      
+      getComponent(x, y) {
+        return this.data[y][x];
+      }
+      
+      update() {
+        for (let i = 0; i < this.data.length; i++) {
+            let row = this.data[i];
+          for (let j = 0; j < row.length; j++) {
+            let tile = row[j];
+            if (tile) tile.update();
+          }
+        }
+        
+        for (let i = 0; i < this.data.length; i++) {
+            let row = this.data[i];
+          for (let j = 0; j < row.length; j++) {
+            let tile = row[j];
+            if (tile) tile.lateUpdate();
+          }
+        }
+        console.log("LateUpdated grid: ", JSON.stringify(this));
+      }
+      
+      draw() {
+        console.log("Grid drawing");
+        
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, canvas.width, canvas.height);
+        this.ctx.fillStyle = "black";
+        this.ctx.fill();
+        
+        for (let i = 0; i < this.data.length; i++) {
+            let row = this.data[i];
+            for (let j = 0; j < row.length; j++) {
+                let dx, dy;
+                dx = dy = canvas.width / this.data.length;
+                let x = dx * j;
+                let y = dy * i;
+                
+                // Draw background
+                
+                //this.ctx.beginPath();
+                //this.ctx.rect(x+2,y+2,dx-4,dy-4);
+                //this.ctx.fillStyle = "#ccc";
+                //this.ctx.fill();
+                
+                // Draw component
+                
+                let tile = row[j];
+                if (tile) tile.draw(this.ctx, x, y, dx, dy);
+            }
+        }
+      }
+      
+      handleClick(x, y) {
+        // super.handleClick(x, y);
+        console.log("canvas clicked: (" + x + ", " + y + ")");
+        let dx, dy;
+        dx = dy = canvas.width / this.data.length;
+        let xCoord = Math.floor(x / dx);
+        let yCoord = Math.floor(y / dy);
+        let tile = this.getComponent(xCoord, yCoord);
+        if (tile) tile.handleClick();
+        this.draw();
+      }
+    }
+
+    class Component {
+      constructor(orientation) {
+        this.signals = [];
+        this.newSignals = [];
+        this.x = null;
+        this.y = null;
+        this.orientation = orientation;
+      }
+      
+      setPosition(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+      
+      processSignals() {
+        throw "unimplemented";
+      }
+      
+      receiveSignal(signal) {
+        console.log("Signal received");
+        this.newSignals.push(signal);
+      }
+      
+      update() {
+        this.processSignals();
+      }
+      
+      lateUpdate() {
+        this.signals = this.signals.concat(this.newSignals);
+        this.newSignals = [];
+      }
+      
+      handleClick() {
+        // do nothing
+        console.log("Component clicked at grid coord (" + this.x + ", " + this.y + ")");
+      }
+      
+      draw(ctx, x, y, dx, dy) {
+        console.log("Draw component");
+      }
+    }
+
+    class Wire4Way extends Component {
+        constructor(orientation) {
+            super(orientation);
+        }
+        
+        processSignals() {
+            let signal = this.signals.shift();
+            if (!signal) return;
+            let n = Util.getNextCoord(this.x, this.y, signal.orientation);
+            let nextComponent = grid.getComponent(n.x, n.y);
+            if (nextComponent) nextComponent.receiveSignal(signal);
+        }
+    }
+    
+    class Wire2Way extends Component {
+        constructor(orientation) {
+            super(orientation);
+        }
+        
+        processSignals() {
+            let signal = this.signals.shift();
+            if (!signal) return;
+            let n = Util.getNextCoord(this.x, this.y, signal.orientation);
+            let nextComponent = grid.getComponent(n.x, n.y);
+            if (nextComponent) nextComponent.receiveSignal(signal);
+        }
+        
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(Wire2Way.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw signal
+            
+            if (this.signals.length !== 0) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = "cyan";
+                ctx.fill();
+            }
+          }
+    }
+    Wire2Way.image = new Image();
+    Wire2Way.image.src = "straight.png";
+    
+    class WireBend extends Component {
+        constructor(orientation) {
+            super(orientation);
+            this.lookupTable = [
+                [0, 1, 1, 0],
+                [1, 1, 2, 2],
+                [3, 2, 2, 3],
+                [0, 0, 3, 3]
+            ];
+        }
+        
+        processSignals() {
+            let signal = this.signals.shift();
+            if (!signal) return;
+            let targetOrientation = this.lookupTable[this.orientation][signal.orientation];
+            signal.orientation = targetOrientation;
+            let n = Util.getNextCoord(this.x, this.y, targetOrientation);
+            let nextComponent = grid.getComponent(n.x, n.y);
+            if (nextComponent) nextComponent.receiveSignal(signal);
+        }
+        
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(WireBend.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw signal
+            
+            if (this.signals.length !== 0) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = "cyan";
+                ctx.fill();
+            }
+          }
+    }
+    WireBend.image = new Image();
+    WireBend.image.src = "elbow.png";
+
+    class Thrower extends Component {
+      constructor(orientation) {
+        super(orientation);
+      }
+      
+      receiveSignal() {
+        throw "Thrower can't receive signal";
+      }
+      
+      handleClick() {
+        super.handleClick();
+        this.signals.push(new Signal(this.orientation));
+        console.log(this);
+      }
+      
+      processSignals() {
+        let signal = this.signals.shift();
+        if (!signal) return;
+        let n = Util.getNextCoord(this.x, this.y, signal.orientation);
+        let nextComponent = grid.getComponent(n.x, n.y);
+        if (nextComponent) nextComponent.receiveSignal(signal);
+      }
+      
+      draw(ctx, x, y, dx, dy) {
+        ctx.drawImage(Thrower.image, x, y, dx, dy);
+        
+        // Draw signal
+        
+        if (this.signals.length !== 0) {
+            ctx.beginPath();
+            ctx.rect(x+20,y+20,dx-40,dy-40);
+            ctx.fillStyle = "cyan";
+            ctx.fill();
+        }
+      }
+    }
+    Thrower.image = new Image();
+    Thrower.image.src = "thrower.png";
+    
+    class Catcher extends Component {
+      constructor(orientation) {
+        super(orientation);
+      }
+      
+      processSignals() {
+        let signal = this.signals.shift();
+        if (!signal) return;
+        console.log("Caught!");
+      }
+      
+      draw(ctx, x, y, dx, dy) {
+        ctx.drawImage(Catcher.image, x, y, dx, dy);
+        
+        // Draw signal
+        
+        if (this.signals.length !== 0) {
+            ctx.beginPath();
+            ctx.rect(x+20,y+20,dx-40,dy-40);
+            ctx.fillStyle = "cyan";
+            ctx.fill();
+        }
+      }
+    }
+    Catcher.image = new Image();
+    Catcher.image.src = "catcher.png";
+
+    class Signal {
+      constructor(orientation) {
+        this.orientation = orientation;
+      }
+    }
+    
+    let canvas = document.getElementsByTagName("canvas")[0];
+    
+    var currentLevel = 1;
+    var levelGrids = [
+        null,
+        // Level 1
+        [
+          [null, new Thrower(3), null, null, null, null, null, null, null, null],
+          [null, new Wire2Way(3), null, null, null, null, null, null, null, null],
+          [null, new WireBend(0), new Wire2Way(0), new WireBend(2), null, null, null, null, null, null],
+          [null, null, new WireBend(3), new WireBend(1), null, null, null, null, null, null],
+          [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
+          [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
+          [null, null, new Catcher(0), null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null]
+        ],
+        // Level 2
+        [
+          [null, , null, null, null, new Thrower(3), null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null]
+        ],
+    ];
+    
+    let grid = new Grid(canvas);
+    grid.loadData(levelGrids[1]);
+    
+    window.addEventListener("load", function(event) {
+        grid.draw();
+        window.setInterval(function() {
+            grid.update();
+            grid.draw();
+        }, 750);
+    });
+    
+    function nextLevel() {
+        if (currentLevel > levelGrids.length - 2) {
+            return;
+        }
+        currentLevel++;
+        grid.loadData(levelGrids[currentLevel]);
+        document.getElementsByTagName("h1")[0].textContent = "Level " + currentLevel;
+        grid.draw();
+    }
+    
+    function prevLevel() {
+        if (currentLevel <= 1) {
+            return;
+        }
+        currentLevel--;
+        grid.loadData(levelGrids[currentLevel]);
+        document.getElementsByTagName("h1")[0].textContent = "Level " + currentLevel;
+        grid.draw();
+    }
+    
+    </script>
+  </body>
+</html>
