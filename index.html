@@ -23,7 +23,7 @@
     </style>
   </head>
   <body>
-  <h1>Level 1</h1>
+  <h1>Level ?</h1>
   <div class="canvaswrap">
     <canvas height="500" width="500"></canvas>
   </div>
@@ -561,6 +561,11 @@
                 ctx.rect(x + 18 + rcvX,y+3,14,14);
                 ctx.fillStyle = "black";
                 ctx.fill();
+                
+                ctx.beginPath();
+                ctx.rect(x + 19 + rcvX,y+4,12,12);
+                ctx.fillStyle = "white";
+                ctx.fill();
             }
             
             ctx.beginPath();
@@ -600,14 +605,14 @@
         null,
         // Level 1
         [
-          [null, new Thrower(3), null, null, null, null, null, null, null, null],
-          [null, new Wire2Way(3), null, null, null, null, null, null, null, null],
-          [null, new WireBend(0), new Wire2Way(0), new WireBend(2), null, null, null, null, null, null],
-          [null, null, new WireBend(3), new WireBend(1), null, null, null, null, null, null],
-          [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
-          [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
-          [null, null, new Catcher(0, ["red", "blue", "blue"]), null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, new Thrower(3), null, null, null, null, null, null],
+          [null, null, null, new Wire2Way(3), null, null, null, null, null, null],
+          [null, null, null, new WireBend(0), new Wire2Way(0), new WireBend(2), null, null, null, null],
+          [null, null, null, null, new WireBend(3), new WireBend(1), null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null],
+          [null, null, null, null, new Catcher(0, ["red", "blue", "blue"]), null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null]
         ],
@@ -637,10 +642,27 @@
           [null, null, new Catcher(0, ["blue", "red", "green"]), null, null, null, new Catcher(0, ["green", "red"]), null, null, null],
           [null, null, null, null, null, null, null, null, null, null]
         ],
+        // Level 4
+        [
+          [null, new Thrower(3), null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null]
+        ],
     ];
     
     let grid = new Grid(canvas);
-    grid.loadData(levelGrids[1]);
+    
+    let querystring = window.location.search.substring(1);
+    if (querystring) changeToLevel(querystring);
+    else changeToLevel(1);
+    
     grid.newSignalColor = "red";
     
     window.addEventListener("load", function(event) {
@@ -656,10 +678,7 @@
             return;
         }
         currentLevel++;
-        grid.loadData(levelGrids[currentLevel]);
-        document.getElementsByTagName("h1")[0].textContent = "Level " + currentLevel;
-        grid.signalsUsed = 0;
-        grid.draw();
+        changeToLevel(currentLevel);
     }
     
     function prevLevel() {
@@ -667,8 +686,12 @@
             return;
         }
         currentLevel--;
-        grid.loadData(levelGrids[currentLevel]);
-        document.getElementsByTagName("h1")[0].textContent = "Level " + currentLevel;
+        changeToLevel(currentLevel);
+    }
+    
+    function changeToLevel(num) {
+        grid.loadData(levelGrids[num]);
+        document.getElementsByTagName("h1")[0].textContent = "Level " + num;
         grid.signalsUsed = 0;
         grid.draw();
     }
