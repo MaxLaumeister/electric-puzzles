@@ -644,15 +644,15 @@
         ],
         // Level 4
         [
-          [null, new Thrower(3), null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, new Thrower(3), null, new Thrower(3), null, null, null, null, null],
+          [null, null, new Wire2Way(3), null, new WireBendVariant1(3), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null, null],
+          [null, null, new WireBendVariant1(3), new Wire2Way(0), new Diverter(0), new WireBend(2), null, new Wire2Way(3), null, null],
+          [null, null, new Wire2Way(3), null, null, new Wire2Way(3), null, new Wire2Way(3), null, null],
+          [null, null, new Holder(0), null, new WireBend(3), new WireBend(1), null, new Wire2Way(3), null, null],
+          [null, null, new WireBendVariant1(3), new Wire2Way(0), new Diverter(0), new WireBend(2), null, new Wire2Way(3), null, null],
+          [null, null, new Wire2Way(3), null, null, new Catcher(0, ["blue", "red", "green"]), null, new Wire2Way(3), null, null],
+          [null, new WireBend(3), new Diverter(0), new WireBend(2), null, null, null, new Wire2Way(3), null, null],
+          [null, new Catcher(0, ["red", "blue", "green", "blue"]), null, new WireBend(0), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(1), null, null],
           [null, null, null, null, null, null, null, null, null, null]
         ],
     ];
