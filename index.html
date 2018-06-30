@@ -690,6 +690,7 @@
     }
     
     function changeToLevel(num) {
+        currentLevel = num;
         grid.loadData(levelGrids[num]);
         document.getElementsByTagName("h1")[0].textContent = "Level " + num;
         grid.signalsUsed = 0;
