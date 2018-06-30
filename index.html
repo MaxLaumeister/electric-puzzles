@@ -20,24 +20,44 @@
             border: solid black 20px;
             margin: 10px 0;
         }
+        .gamewrap {
+            display: flex;
+            justify-content: center;
+        }
+        .gamewrap > * {
+            margin: 20px;
+        }
+        .sidebar {
+            width: 400px;
+            border: solid gray 1px;
+            background-color: gray;
+        }
+        #helpContent {
+            text-align: left;
+            padding: 10px;
+        }
+        #helpContent img {
+            width: 32px;
+        }
     </style>
   </head>
   <body>
-  <h1>Level 1</h1>
-  <div class="canvaswrap">
-    <canvas height="500" width="500"></canvas>
-  </div>
-  <br>
-  <form action="">
-    Signal Color: 
-    <input id="rad_red" type="radio" name="gender" value="red" checked="checked" onclick="grid.newSignalColor = 'red';">Red
-    <input id="rad_blue" type="radio" name="gender" value="blue" onclick="grid.newSignalColor = 'blue';">Blue
-    <input id="rad_green" type="radio" name="gender" value="green" onclick="grid.newSignalColor = 'green';">Green
-  </form>
-  <br>
-  <button onclick="prevLevel()">Prev Level</button>
-  <button onclick="nextLevel()">Next Level</button>
-  <table border="1" style="margin: 20px auto">
+  <div class="gamewrap">
+      <div clas="outerwrap">
+          <h1>Level 1</h1>
+          <div class="canvaswrap">
+            <canvas height="500" width="500"></canvas>
+          </div>
+          <form action="">
+            Signal Color: 
+            <input id="rad_red" type="radio" name="gender" value="red" checked="checked" onclick="grid.newSignalColor = 'red';">Red
+            <input id="rad_blue" type="radio" name="gender" value="blue" onclick="grid.newSignalColor = 'blue';">Blue
+            <input id="rad_green" type="radio" name="gender" value="green" onclick="grid.newSignalColor = 'green';">Green
+          </form>
+          <br>
+          <button onclick="prevLevel()">Prev Level</button>
+          <button onclick="nextLevel()">Next Level</button>
+          <table border="1" style="margin: 20px auto">
     <tr>
         <th>Level</th>
         <th>Par</th>
@@ -51,6 +71,16 @@
         <td>6</td>
     </tr>
   </table>
+      </div>
+      <div class="sidebar">
+        <h2>Help</h2>
+        <div id="helpContent">
+            <img src="thrower.png"> <b>Generator:</b> Click this to generate a signal of the selected color.<br>
+            <img src="catcher.png"> <b>Receiver:</b> Satisfy the receiver in this level by sending it a red signal, a blue signal, and then another blue signal.
+        </div>
+      </div>
+  </div>
+  
     <script>
     let Util = {
         getNextCoord: function (ix, iy, orientation) {
