@@ -9,18 +9,24 @@
             text-align: center;
         }
         canvas {
-            border: solid black 20px;
-            margin: 10px 0;
             -moz-user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
+        .canvaswrap {
+            display: inline-block;
+            font-size: 0;
+            border: solid black 20px;
+            margin: 10px 0;
+        }
     </style>
   </head>
   <body>
   <h1>Level 1</h1>
-  <canvas height="500" width="500"></canvas>
+  <div class="canvaswrap">
+    <canvas height="500" width="500"></canvas>
+  </div>
   <br>
   <form action="">
     Signal Color: 
