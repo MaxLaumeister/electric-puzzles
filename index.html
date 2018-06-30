@@ -21,6 +21,9 @@
             border: solid black 20px;
             margin: 10px 0;
         }
+        small {
+            color: gray;
+        }
     </style>
   </head>
   <body>
@@ -38,7 +41,7 @@
   <br>
   <button onclick="prevLevel()">Prev Level</button>
   <button onclick="nextLevel()">Next Level</button>
-  <table border="1" style="margin: 20px auto">
+  <table border="1" style="margin: 20px auto; margin-top: 60px;">
     <tr>
         <th>Level</th>
         <th>Par</th>
@@ -64,6 +67,7 @@
         <td>6</td>
     </tr>
   </table>
+  <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
     <script>
     let Util = {
         getNextCoord: function (ix, iy, orientation) {
