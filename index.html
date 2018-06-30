@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Marble Signal</title>
+    <title>Electric Puzzles</title>
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
     <style>
         body {
             text-align: center;
@@ -21,8 +22,25 @@
   <h1>Level 1</h1>
   <canvas height="500" width="500"></canvas>
   <br>
+  <form action="">
+    Signal Color: 
+    <input id="rad_red" type="radio" name="gender" value="red" checked="checked" onclick="grid.newSignalColor = 'red';">Red
+    <input id="rad_blue" type="radio" name="gender" value="blue" onclick="grid.newSignalColor = 'blue';">Blue
+    <input id="rad_green" type="radio" name="gender" value="green" onclick="grid.newSignalColor = 'green';">Green
+  </form>
+  <br>
   <button onclick="prevLevel()">Prev Level</button>
   <button onclick="nextLevel()">Next Level</button>
+  <table border="1" style="margin: 20px auto">
+    <tr>
+        <th>Level</th>
+        <th>Par</th>
+    </tr>
+    <tr>
+        <td>Level 1</td>
+        <td>3</td>
+    </tr>
+  </table>
     <script>
     let Util = {
         getNextCoord: function (ix, iy, orientation) {
@@ -45,6 +63,7 @@
       constructor(canvas) {
         this.c = canvas;
         this.ctx = canvas.getContext("2d");
+        this.signalsUsed = 0;
         canvas.addEventListener('click', (e) => {
           this.handleClick(e.pageX - e.currentTarget.offsetLeft, e.pageY - e.currentTarget.offsetTop);
         });
@@ -82,16 +101,28 @@
             if (tile) tile.lateUpdate();
           }
         }
-        console.log("LateUpdated grid: ", JSON.stringify(this));
+        //console.log("LateUpdated grid: ", JSON.stringify(this));
+        
+        // Check if level complete
+        this.complete = true;
+        for (let i = 0; i < this.data.length; i++) {
+            let row = this.data[i];
+            for (let j = 0; j < row.length; j++) {
+              let tile = row[j];
+              if (tile && tile.colorList && tile.colorList.length !== 0) this.complete = false;
+            }
+        }
       }
       
       draw() {
-        console.log("Grid drawing");
+        //console.log("Grid drawing");
         
         this.ctx.beginPath();
         this.ctx.rect(0, 0, canvas.width, canvas.height);
         this.ctx.fillStyle = "black";
         this.ctx.fill();
+        
+        // Draw each tile
         
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
@@ -113,6 +144,27 @@
                 let tile = row[j];
                 if (tile) tile.draw(this.ctx, x, y, dx, dy);
             }
+        }
+        
+        // Draw stats
+        
+        this.ctx.font = "18px Arial";
+        this.ctx.fillStyle = "red";
+        this.ctx.fillText("Signals Used: " + this.signalsUsed,10,this.c.height - 10);
+        
+        if (this.complete) {
+            this.ctx.beginPath();
+            this.ctx.globalAlpha = 0.6;
+            this.ctx.fillStyle = "white";
+            this.ctx.rect(0, 0, this.c.width, this.c.height);
+            this.ctx.fill();
+            this.ctx.globalAlpha = 1;
+            
+            this.ctx.font = "24px Arial";
+            this.ctx.textAlign="center"; 
+            this.ctx.fillStyle = "lime";
+            this.ctx.fillText("Level Complete!",this.c.width / 2,this.c.height / 2);
+            this.ctx.textAlign="left";
         }
       }
       
@@ -210,7 +262,7 @@
             if (this.signals.length !== 0) {
                 ctx.beginPath();
                 ctx.rect(x+20,y+20,dx-40,dy-40);
-                ctx.fillStyle = "cyan";
+                ctx.fillStyle = this.signals[0].color;
                 ctx.fill();
             }
           }
@@ -251,7 +303,7 @@
             if (this.signals.length !== 0) {
                 ctx.beginPath();
                 ctx.rect(x+20,y+20,dx-40,dy-40);
-                ctx.fillStyle = "cyan";
+                ctx.fillStyle = this.signals[0].color;
                 ctx.fill();
             }
           }
@@ -270,7 +322,8 @@
       
       handleClick() {
         super.handleClick();
-        this.signals.push(new Signal(this.orientation));
+        this.signals.push(new Signal(this.orientation, grid.newSignalColor));
+        grid.signalsUsed++;
         console.log(this);
       }
       
@@ -290,7 +343,7 @@
         if (this.signals.length !== 0) {
             ctx.beginPath();
             ctx.rect(x+20,y+20,dx-40,dy-40);
-            ctx.fillStyle = "cyan";
+            ctx.fillStyle = this.signals[0].color;
             ctx.fill();
         }
       }
@@ -299,35 +352,67 @@
     Thrower.image.src = "thrower.png";
     
     class Catcher extends Component {
-      constructor(orientation) {
+      constructor(orientation, colorList) {
         super(orientation);
+        this.colorList = colorList;
+      }
+      
+      receiveSignal(signal) {
+        if (this.colorList.length === 0) return;
+        if (signal.color === this.colorList[0]) {
+            this.colorList.shift(); // Color satisfied
+        }
       }
       
       processSignals() {
-        let signal = this.signals.shift();
-        if (!signal) return;
-        console.log("Caught!");
+        // do nothing
       }
       
       draw(ctx, x, y, dx, dy) {
-        ctx.drawImage(Catcher.image, x, y, dx, dy);
+        if (this.colorList.length === 0) ctx.drawImage(Catcher.imageSat, x, y, dx, dy);
+        else ctx.drawImage(Catcher.image, x, y, dx, dy);
+        
+        // Draw the receptors
+        
+        let rcvX = -15;
+        
+        for (let i = 0; i < this.colorList.length; i++) {
+            let color = this.colorList[i];
+            
+            if (i === 0) {
+                ctx.beginPath();
+                ctx.rect(x + 18 + rcvX,y+3,14,14);
+                ctx.fillStyle = "black";
+                ctx.fill();
+            }
+            
+            ctx.beginPath();
+            ctx.rect(x + 20 + rcvX,y+5,10,10);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            rcvX += 15;
+        }
         
         // Draw signal
         
-        if (this.signals.length !== 0) {
-            ctx.beginPath();
-            ctx.rect(x+20,y+20,dx-40,dy-40);
-            ctx.fillStyle = "cyan";
-            ctx.fill();
-        }
+        //if (this.signals.length !== 0) {
+        //    ctx.beginPath();
+        //    ctx.rect(x+20,y+20,dx-40,dy-40);
+        //    ctx.fillStyle = this.signals[0].color;
+        //    ctx.fill();
+        //}
       }
     }
     Catcher.image = new Image();
     Catcher.image.src = "catcher.png";
+    Catcher.imageSat = new Image();
+    Catcher.imageSat.src = "catcher-satisfied.png";
 
     class Signal {
-      constructor(orientation) {
+      constructor(orientation, color) {
         this.orientation = orientation;
+        this.color = color;
       }
     }
     
@@ -344,7 +429,7 @@
           [null, null, new WireBend(3), new WireBend(1), null, null, null, null, null, null],
           [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
           [null, null, new Wire2Way(3), null, null, null, null, null, null, null],
-          [null, null, new Catcher(0), null, null, null, null, null, null, null],
+          [null, null, new Catcher(0, ["red", "blue", "blue"]), null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null]
@@ -366,13 +451,14 @@
     
     let grid = new Grid(canvas);
     grid.loadData(levelGrids[1]);
+    grid.newSignalColor = "red";
     
     window.addEventListener("load", function(event) {
         grid.draw();
         window.setInterval(function() {
             grid.update();
             grid.draw();
-        }, 750);
+        }, 500);
     });
     
     function nextLevel() {
