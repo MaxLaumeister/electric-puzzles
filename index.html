@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Electric Puzzles</title>
     <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="canonical" href="https://www.maxlaumeister.com/electric-puzzles/" />
     <style>
         body {
             text-align: center;
@@ -57,6 +58,10 @@
     <tr>
         <td>Level 4</td>
         <td>?</td>
+    </tr>
+    <tr>
+        <td>Level 5</td>
+        <td>6</td>
     </tr>
   </table>
     <script>
@@ -370,6 +375,48 @@
     WireBend.image = new Image();
     WireBend.image.src = "elbow.png";
     
+    class Duplicator extends Component {
+        constructor(orientation) {
+            super(orientation);
+        }
+        
+        processSignals() {
+            let signal = this.signals.shift();
+            if (!signal) return;
+            
+            let signalCopy = JSON.parse(JSON.stringify(signal));
+            
+            let n1 = Util.getNextCoord(this.x, this.y, 0);
+            let nextComponent1 = grid.getComponent(n1.x, n1.y);
+            signal.orientation = 0;
+            if (nextComponent1) nextComponent1.receiveSignal(signal);
+            
+            let n2 = Util.getNextCoord(this.x, this.y, 2);
+            let nextComponent2 = grid.getComponent(n2.x, n2.y);
+            signalCopy.orientation = 2;
+            if (nextComponent2) nextComponent2.receiveSignal(signalCopy);
+        }
+        
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(Duplicator.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw signal
+            
+            if (this.signals.length !== 0) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = this.signals[0].color;
+                ctx.fill();
+            }
+          }
+    }
+    Duplicator.image = new Image();
+    Duplicator.image.src = "duplicator.png";
+    
     class WireBendVariant1 extends WireBend {
         //constructor(orientation) {
         //    super(orientation);
@@ -658,6 +705,19 @@
           [null, new WireBend(3), new Diverter(0), new WireBend(2), null, null, null, new Wire2Way(3), null, null],
           [null, new Catcher(0, ["red", "blue", "green", "blue"]), null, new WireBend(0), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(1), null, null],
           [null, null, null, null, null, null, null, null, null, null]
+        ],
+        // Level 5
+        [
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, new Thrower(3), null, null, new Thrower(3), null, null, null],
+          [null, null, null, new Wire2Way(3), null, null, new Wire2Way(3), null, null, null],
+          [null, null, null, new WireBendVariant1(3), new Holder(0), new Wire2Way(0), new Duplicator(0), new WireBend(2), null, null],
+          [null, null, null, new Wire2Way(3), null, null, new WireBend(3), new WireBend(1), null, null],
+          [null, null, null, new Catcher(0, ["red", "green", "red", "green", "blue"]), null, null, new Catcher(0, ["red", "red", "green", "blue"]), null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null]
         ],
     ];
     
