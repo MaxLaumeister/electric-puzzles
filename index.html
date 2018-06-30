@@ -247,6 +247,47 @@
         }
     }
     
+    class Holder extends Component {
+        constructor(orientation) {
+            super(orientation);
+            this.held = null;
+        }
+        
+        processSignals() {
+            let signal = this.signals.shift();
+            if (!signal) return;
+            // New signal
+            console.log("Found signal");
+            let toRelease = this.held;
+            this.held = signal;
+            if (!toRelease) return;
+            // Signal there already, release old signal
+            let n = Util.getNextCoord(this.x, this.y, signal.orientation);
+            toRelease.orientation = signal.orientation;
+            let nextComponent = grid.getComponent(n.x, n.y);
+            if (nextComponent) nextComponent.receiveSignal(toRelease);
+        }
+        
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(Holder.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw held signal
+            
+            if(this.held || this.signals.length) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = this.signals[0] ? this.signals[0].color : this.held.color;
+                ctx.fill();
+            }
+          }
+    }
+    Holder.image = new Image();
+    Holder.image.src = "holder.png";
+    
     class Wire2Way extends Component {
         constructor(orientation) {
             super(orientation);
@@ -355,7 +396,7 @@
             ctx.save();
             ctx.translate(x + dx/2, y + dy/2);
             ctx.scale(-1, 1);
-            ctx.rotate( ((-this.orientation + 3) * 90) * Math.PI/180);
+            ctx.rotate( ((this.orientation + 3) * 90) * Math.PI/180);
             ctx.drawImage(WireBendVariant1.image, -dx/2, -dy/2, dx, dy);
             ctx.restore();
             
@@ -371,6 +412,31 @@
     }
     WireBendVariant2.image = new Image();
     WireBendVariant2.image.src = "elbow-variant.png";
+    
+    class WireBendVariant3 extends WireBend {
+        //constructor(orientation) {
+        //    super(orientation);
+        //}
+        
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(WireBendVariant3.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw signal
+            
+            if (this.signals.length !== 0) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = this.signals[0].color;
+                ctx.fill();
+            }
+          }
+    }
+    WireBendVariant3.image = new Image();
+    WireBendVariant3.image.src = "elbow-variant3.png";
     
     class Diverter extends Component {
         constructor(orientation) {
@@ -553,6 +619,19 @@
           [null, null, null, new WireBend(0), new Diverter(0), new WireBend(2), null, new Catcher(0, ["red", "green", "blue"]), null, null],
           [null, null, null, null, null, new Catcher(0, ["blue", "red", "green"]), null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null]
+        ],
+        // Level 3
+        [
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, new Thrower(3), null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null],
+          [new WireBend(3), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new Diverter(0), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null],
+          [new Wire2Way(3), null, null, null, null, null, null, new WireBend(3), new Diverter(0), new WireBend(2)],
+          [new WireBend(0), new WireBendVariant2(3), new Wire2Way(0), new Holder(0), new Wire2Way(0), new Holder(0), new Wire2Way(0), new WireBendVariant3(2), new Wire2Way(0), new WireBend(1)],
+          [null, new Wire2Way(3), null, null, null, null, null, new Wire2Way(3), null, null],
+          [null, new WireBend(0), new WireBendVariant2(3), new Wire2Way(2), new Holder(0), new Wire2Way(2), new WireBendVariant1(2), new WireBend(1), null, null],
+          [null, null, new Catcher(0, ["blue", "red", "green"]), null, null, null, new Catcher(0, ["blue", "red", "green"]), null, null, null]
         ],
     ];
     
