@@ -69,6 +69,7 @@
   </table>
   <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
   <p><small>Sound effects CC-BY by <a href="https://freesound.org/people/LittleRobotSoundFactory/packs/16881/">LittleRobotSoundFactory</a>.</small></p>
+    <script src="howler.min.js"></script>
     <script>
     let Util = {
         getNextCoord: function (ix, iy, orientation) {
@@ -288,7 +289,6 @@
         
         receiveSignal(signal) {
             super.receiveSignal(signal);
-            gamesound.holder.currentTime = 0;
             gamesound.holder.play();
         }
         
@@ -522,7 +522,6 @@
             
             // We have a signal
             
-            gamesound.diverter.currentTime = 0;
             gamesound.diverter.play();
             
             let targetOrientation;
@@ -609,17 +608,14 @@
             
             if (this.colorList.length !== 0) {
                 // One color satisfied
-                gamesound.signalReceived.currentTime = 0;
                 gamesound.signalReceived.play();
             } else {
                 // All colors satisfied
-                gamesound.allSignalsReceived.currentTime = 0;
                 gamesound.allSignalsReceived.play();
             }
             
         } else {
             // Signal rejected
-            gamesound.signalRejected.currentTime = 0;
             gamesound.signalRejected.play();
         }
       }
@@ -795,13 +791,17 @@
     }
     
     let gamesound = {
-        diverter: new Audio('274203__littlerobotsoundfactory__ui-synth-02-lowpass.wav'),
-        holder: new Audio('274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav'),
-        signalReceived: new Audio('274204__littlerobotsoundfactory__ui-synth-01.wav'),
-        signalRejected: new Audio('274196__littlerobotsoundfactory__ui-electric-05.wav'),
-        allSignalsReceived: new Audio('274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav')
+        diverter: new Howl({src:['274203__littlerobotsoundfactory__ui-synth-02-lowpass.wav']}),
+        holder: new Howl({src:['274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav']}),
+        signalReceived: new Howl({src:['274204__littlerobotsoundfactory__ui-synth-01.wav']}),
+        signalRejected: new Howl({src:['274196__littlerobotsoundfactory__ui-electric-05.wav']}),
+        allSignalsReceived: new Howl({src:['274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']})
     };
     
+    // Preload sounds
+    for (let sound in gamesound) {
+        sound.preload = "auto";
+    }
     </script>
   </body>
 </html>
