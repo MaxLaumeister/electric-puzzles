@@ -285,6 +285,12 @@
             if (nextComponent) nextComponent.receiveSignal(toRelease);
         }
         
+        receiveSignal(signal) {
+            super.receiveSignal(signal);
+            gamesound.holder.currentTime = 0;
+            gamesound.holder.play();
+        }
+        
         draw(ctx, x, y, dx, dy) {
             ctx.save();
             ctx.translate(x + dx/2, y + dy/2);
@@ -512,6 +518,12 @@
         processSignals() {
             let signal = this.signals.shift();
             if (!signal) return;
+            
+            // We have a signal
+            
+            gamesound.diverter.currentTime = 0;
+            gamesound.diverter.play();
+            
             let targetOrientation;
             if (!this.state) targetOrientation = this.lookupTable[this.orientation][signal.orientation];
             else targetOrientation = this.lookupTable[this.orientation + 1][signal.orientation];
@@ -593,6 +605,17 @@
         if (this.colorList.length === 0) return;
         if (signal.color === this.colorList[0]) {
             this.colorList.shift(); // Color satisfied
+            
+            if (this.colorList.length !== 0) {
+                // One color satisfied
+                gamesound.signalReceived.currentTime = 0;
+                gamesound.signalReceived.play();
+            } else {
+                // All colors satisfied
+                gamesound.allSignalsReceived.currentTime = 0;
+                gamesound.allSignalsReceived.play();
+            }
+            
         }
       }
       
@@ -764,6 +787,13 @@
         grid.signalsUsed = 0;
         grid.draw();
     }
+    
+    let gamesound = {
+        diverter: new Audio('274203__littlerobotsoundfactory__ui-synth-02-lowpass.wav'),
+        holder: new Audio('274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav'),
+        signalReceived: new Audio('274204__littlerobotsoundfactory__ui-synth-01.wav'),
+        allSignalsReceived: new Audio('274183__littlerobotsoundfactory__jingle-win-synth-04.wav')
+    };
     
     </script>
   </body>
