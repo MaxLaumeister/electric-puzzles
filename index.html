@@ -255,20 +255,6 @@
         //console.log("Draw component");
       }
     }
-
-    class Wire4Way extends Component {
-        constructor(orientation) {
-            super(orientation);
-        }
-        
-        processSignals() {
-            let signal = this.signals.shift();
-            if (!signal) return;
-            let n = Util.getNextCoord(this.x, this.y, signal.orientation);
-            let nextComponent = grid.getComponent(n.x, n.y);
-            if (nextComponent) nextComponent.receiveSignal(signal);
-        }
-    }
     
     class HoldingTube extends Component {
         constructor(orientation) {
@@ -278,11 +264,14 @@
         
         receiveSignal(signal) {
             super.receiveSignal(signal);
-            //gamesound.holder.play();
+            if (this.signals.length < 2) gamesound.holder.play();
+            else gamesound.holdingTubeRelease.play();
         }
         
         processSignals() {
-            if (this.signals.length >= 3) this.releasing = true;
+            if (this.signals.length >= 3) {
+                this.releasing = true;
+            }
             if (this.releasing) {
                 let signal = this.signals.shift();
                 if (!signal) {
@@ -412,6 +401,30 @@
             this.signals.push(new Signal(orientation, color));
         }
     }
+    
+    class Wire4Way extends Wire2Way {
+        constructor(orientation) {
+            super(orientation);
+        }
+        draw(ctx, x, y, dx, dy) {
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(Wire4Way.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw signal
+            
+            if (this.signals.length !== 0) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+20,dx-40,dy-40);
+                ctx.fillStyle = this.signals[0].color;
+                ctx.fill();
+            }
+          }
+    }
+    Wire4Way.image = new Image();
+    Wire4Way.image.src = "4way.png";
     
     class WireBend extends Component {
         constructor(orientation) {
@@ -579,14 +592,14 @@
     
     class Diverter extends Component {
         constructor(orientation) {
-            super(orientation);
+            super(0);
             this.lookupTable = [
                 [0, 0, 0, 0],
                 [2, 2, 2, 2],
                 [1, 1, 1, 1],
                 [3, 3, 3, 3]
             ];
-            this.state = false;
+            this.state = orientation ? true : false;
         }
         
         processSignals() {
@@ -835,16 +848,16 @@
         ],
         // Level 7
         [
-          [null, null, null, null, new Thrower(3), null, null, null, null, null, null],
-          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
-          [null, null, null, null, new HoldingTube(3), null, null, null, null, null, null],
-          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
-          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
-          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
-          [null, null, null, null, new Catcher(0, ["red", "green", "blue", "red"]), null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null, null],
-          [null, null, null, null, null, null, null, null, null, null, null]
+          [new WireBend(3), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null, null, null, null, null],
+          [new Wire2Way(3), new WireBend(3), new Wire2Way(0), new Wire2Way(0), new Wire4Way(0), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null],
+          [new Wire2Way(3), new Wire2Way(3), null, null, new WireBend(0), new Wire2Way(0), new Wire2Way(0), new WireBend(2), new Wire2Way(3), null],
+          [new Wire2Way(3), new Wire2Way(3), null, new Thrower(3), null, new Thrower(3), null, new Wire2Way(3), new Wire2Way(3), null],
+          [new Wire2Way(3), new Wire2Way(3), null, new Wire2Way(3), null, new Wire2Way(3), null, new Wire2Way(3), new Wire2Way(3), null],
+          [new Wire2Way(3), new WireBendVariant1(3), new Wire2Way(0), new WireBend(1), null, new WireBend(0), new Wire2Way(0), new WireBendVariant2(2), new Wire2Way(3), null],
+          [new Wire2Way(3), new HoldingTube(3), null, null, null, null, null, new HoldingTube(3), new Wire2Way(3), null],
+          [new Wire2Way(3), new Wire2Way(3), null, null, null, null, null, new Wire2Way(3), new Wire2Way(3), null],
+          [new WireBendVariant2(0), new Diverter(1), new WireBend(2), null, null, null, new WireBend(3), new Diverter(0), new WireBendVariant1(1), null],
+          [new WireBend(0), new Wire2Way(0), new Diverter(1), new Catcher(0, ["red", "green", "blue"]), null, new Catcher(0, ["blue", "green", "red"]), new Diverter(0), new Wire2Way(0), new WireBend(1), null]
         ]
     ];
     
@@ -895,7 +908,8 @@
         signalReceived: new Howl({src:['274204__littlerobotsoundfactory__ui-synth-01.wav']}),
         signalRejected: new Howl({src:['274196__littlerobotsoundfactory__ui-electric-05.wav']}),
         allSignalsReceived: new Howl({src:['274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']}),
-        duplicator: new Howl({src:['274207__littlerobotsoundfactory__ui-synth-04-lowpass.wav']})
+        duplicator: new Howl({src:['274207__littlerobotsoundfactory__ui-synth-04-lowpass.wav']}),
+        holdingTubeRelease: new Howl({src:['19486__halleck__jacobsladdersingle1-edit.wav']})
     };
     
     // Preload sounds
