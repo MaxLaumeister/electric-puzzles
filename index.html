@@ -252,7 +252,7 @@
       }
       
       draw(ctx, x, y, dx, dy) {
-        console.log("Draw component");
+        //console.log("Draw component");
       }
     }
 
@@ -270,6 +270,63 @@
         }
     }
     
+    class HoldingTube extends Component {
+        constructor(orientation) {
+            super(orientation);
+            this.releasing = false;
+        }
+        
+        receiveSignal(signal) {
+            super.receiveSignal(signal);
+            //gamesound.holder.play();
+        }
+        
+        processSignals() {
+            if (this.signals.length >= 3) this.releasing = true;
+            if (this.releasing) {
+                let signal = this.signals.shift();
+                if (!signal) {
+                    this.releasing = false;
+                    return;
+                }
+                let n = Util.getNextCoord(this.x, this.y, this.orientation);
+                signal.orientation = this.orientation;
+                let nextComponent = grid.getComponent(n.x, n.y);
+                if (nextComponent) nextComponent.receiveSignal(signal);
+            }
+        }
+        
+        draw(ctx, x, y, dx, dy) {
+            // Draw component image background
+            
+            ctx.save();
+            ctx.translate(x + dx/2, y + dy/2);
+            ctx.rotate( (-this.orientation * 90) * Math.PI/180);
+            ctx.drawImage(Catcher.image, -dx/2, -dy/2, dx, dy);
+            ctx.restore();
+            
+            // Draw held signal underlay
+            
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+35 - i * 15,dx-40,dy-40);
+                ctx.fillStyle = "#bbb";
+                ctx.fill();
+            }
+            
+            // Draw held signals
+            
+            let offset = 0;
+            for (let signal of this.signals) {
+                ctx.beginPath();
+                ctx.rect(x+20,y+35 - offset,dx-40,dy-40);
+                ctx.fillStyle = signal.color;
+                ctx.fill();
+                offset += 15;
+            }
+          }
+    }
+    
     class Holder extends Component {
         constructor(orientation) {
             super(orientation);
@@ -280,7 +337,7 @@
             let signal = this.signals.shift();
             if (!signal) return;
             // New signal
-            console.log("Found signal");
+            //console.log("Found signal");
             let toRelease = this.held;
             this.held = signal;
             if (!toRelease) return;
@@ -775,6 +832,19 @@
           [null, null, null, null, null, null, null, null, new Wire2Way(3), new Wire2Way(3)],
           [null, null, null, null, null, null, null, null, new Wire2Way(3), new Wire2Way(3)],
           [null, null, null, null, null, null, null, null, new WireBend(0), new WireBend(1)]
+        ],
+        // Level 7
+        [
+          [null, null, null, null, new Thrower(3), null, null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
+          [null, null, null, null, new HoldingTube(3), null, null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
+          [null, null, null, null, new Wire2Way(3), null, null, null, null, null, null],
+          [null, null, null, null, new Catcher(0, ["red", "green", "blue", "red"]), null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null],
+          [null, null, null, null, null, null, null, null, null, null, null]
         ]
     ];
     
