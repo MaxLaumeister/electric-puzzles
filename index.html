@@ -66,6 +66,10 @@
         <td>Level 5</td>
         <td>6</td>
     </tr>
+    <tr>
+        <td>Level 6</td>
+        <td>2</td>
+    </tr>
   </table>
   <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
   <p><small>Sound effects CC-BY by <a href="https://freesound.org/people/LittleRobotSoundFactory/packs/16881/">LittleRobotSoundFactory</a>.</small></p>
@@ -345,6 +349,13 @@
     Wire2Way.image = new Image();
     Wire2Way.image.src = "straight.png";
     
+    class Wire2WayWithSignal extends Wire2Way {
+        constructor(orientation, color) {
+            super(orientation);
+            this.signals.push(new Signal(orientation, color));
+        }
+    }
+    
     class WireBend extends Component {
         constructor(orientation) {
             super(orientation);
@@ -389,6 +400,11 @@
     class Duplicator extends Component {
         constructor(orientation) {
             super(orientation);
+        }
+        
+        receiveSignal(signal) {
+            super.receiveSignal(signal);
+            gamesound.duplicator.play();
         }
         
         processSignals() {
@@ -508,10 +524,10 @@
         constructor(orientation) {
             super(orientation);
             this.lookupTable = [
-                [0, 1, 1, 0],
-                [1, 1, 2, 2],
-                [3, 2, 2, 3],
-                [0, 0, 3, 3]
+                [0, 0, 0, 0],
+                [2, 2, 2, 2],
+                [1, 1, 1, 1],
+                [3, 3, 3, 3]
             ];
             this.state = false;
         }
@@ -747,6 +763,19 @@
           [null, null, null, null, null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null, null]
         ],
+        // Level 6
+        [
+          [null, null, new Thrower(3), null, null, null, null, new WireBend(3), new Wire2WayWithSignal(2, "red"), new WireBend(2)],
+          [null, null, new WireBendVariant1(3), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBendVariant1(2), new Duplicator(0), new WireBend(2), new Wire2Way(3)],
+          [null, new WireBend(3), new Diverter(0), new Wire2Way(0), new WireBend(2), null, new Wire2Way(3), null, new Wire2Way(3), new Wire2Way(3)],
+          [new WireBend(3), new Duplicator(0), new WireBend(2), new WireBend(3), new Diverter(0), new Wire2Way(0), new WireBend(1), null, new Wire2Way(3), new Wire2Way(3)],
+          [new Catcher(0, ["red", "green", "blue", "red"]), null, new Wire2Way(3), new Catcher(0, ["red", "green", "blue", "red"]), new Wire2Way(3), null, null, null, new Wire2Way(3), new Wire2Way(3)],
+          [null, null, new WireBend(0), new Wire2Way(0), new WireBend(1), null, null, null, new Wire2Way(3), new Wire2Way(3)],
+          [null, null, null, null, null, null, null, null, new Wire2Way(3), new Wire2Way(3)],
+          [null, null, null, null, null, null, null, null, new Wire2Way(3), new Wire2Way(3)],
+          [null, null, null, null, null, null, null, null, new Wire2Way(3), new Wire2Way(3)],
+          [null, null, null, null, null, null, null, null, new WireBend(0), new WireBend(1)]
+        ]
     ];
     
     let grid = new Grid(canvas);
@@ -795,7 +824,8 @@
         holder: new Howl({src:['274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav']}),
         signalReceived: new Howl({src:['274204__littlerobotsoundfactory__ui-synth-01.wav']}),
         signalRejected: new Howl({src:['274196__littlerobotsoundfactory__ui-electric-05.wav']}),
-        allSignalsReceived: new Howl({src:['274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']})
+        allSignalsReceived: new Howl({src:['274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']}),
+        duplicator: new Howl({src:['274207__littlerobotsoundfactory__ui-synth-04-lowpass.wav']})
     };
     
     // Preload sounds
