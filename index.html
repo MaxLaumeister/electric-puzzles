@@ -70,6 +70,10 @@
         <td>Level 6</td>
         <td>2</td>
     </tr>
+    <tr>
+        <td>Level 7</td>
+        <td>?</td>
+    </tr>
   </table>
   <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
   <p><small>Sound effects CC-BY by <a href="https://freesound.org/people/LittleRobotSoundFactory/packs/16881/">LittleRobotSoundFactory</a>.</small></p>
@@ -265,7 +269,7 @@
         receiveSignal(signal) {
             super.receiveSignal(signal);
             if (this.signals.length < 2) gamesound.holder.play();
-            else gamesound.holdingTubeRelease.play();
+            else if (!this.releasing) gamesound.holdingTubeRelease.play();
         }
         
         processSignals() {
@@ -282,6 +286,13 @@
                 signal.orientation = this.orientation;
                 let nextComponent = grid.getComponent(n.x, n.y);
                 if (nextComponent) nextComponent.receiveSignal(signal);
+            }
+        }
+        
+        lateUpdate() {
+            if (!this.releasing) {
+                this.signals = this.signals.concat(this.newSignals);
+                this.newSignals = [];
             }
         }
         
