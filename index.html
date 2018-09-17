@@ -24,6 +24,11 @@
         small {
             color: gray;
         }
+        p {
+            max-width: 500px;
+            text-align: left;
+            margin: 30px auto;
+        }
     </style>
   </head>
   <body>
@@ -33,7 +38,7 @@
   </div>
   <br>
   <form action="">
-    Signal Color: 
+    Signal Color:
     <input id="rad_red" type="radio" name="color" value="red" checked="checked" onclick="grid.newSignalColor = 'red';">Red
     <input id="rad_green" type="radio" name="color" value="green" onclick="grid.newSignalColor = 'green';">Green
     <input id="rad_blue" type="radio" name="color" value="blue" onclick="grid.newSignalColor = 'blue';">Blue
@@ -42,6 +47,7 @@
   <br>
   <button onclick="prevLevel()">Prev Level</button>
   <button onclick="nextLevel()">Next Level</button>
+  <p><strong>Game Instructions:</strong> Click the "plus" component in the game area to generate a signal. Use the radio buttons below the game area to change the generated signal's color. Satisfy all <strong>receivers</strong> to complete the level.</p>
   <table border="1" style="margin: 20px auto; margin-top: 60px;">
     <tr>
         <th>Level</th>
@@ -207,7 +213,7 @@
             this.ctx.globalAlpha = 1;
             
             this.ctx.font = "24px Arial";
-            this.ctx.textAlign="center"; 
+            this.ctx.textAlign="center";
             this.ctx.fillStyle = "lime";
             this.ctx.fillText("Level Complete!",this.c.width / 2,this.c.height / 2);
             this.ctx.textAlign="left";
