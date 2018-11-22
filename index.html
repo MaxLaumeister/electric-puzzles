@@ -29,10 +29,19 @@
             text-align: left;
             margin: 30px auto;
         }
+        h1 {
+            margin: 0;
+            margin-top: 0.5em;
+        }
+        h2 {
+            margin: 0;
+            margin-bottom: 0.5em;
+        }
     </style>
   </head>
   <body>
   <h1>Level ?</h1>
+  <h2>[level description]</h2>
   <div class="canvaswrap">
     <canvas height="500" width="500"></canvas>
   </div>
@@ -845,6 +854,18 @@
     let canvas = document.getElementsByTagName("canvas")[0];
     
     var currentLevel = 1;
+    var levelNames = [
+        null,
+        "Intro",
+        "Diverters",
+        "Capacitor",
+        "Criss-Cross",
+        "Amplifier",
+        "Infinite Loop",
+        "Battery",
+        "State Machine",
+        "Battery Bank"
+    ];
     var levelGrids = [
         null,
         // Level 1
@@ -1002,6 +1023,7 @@
         currentLevel = num;
         grid.loadData(levelGrids[num]);
         document.getElementsByTagName("h1")[0].textContent = "Level " + num;
+        document.getElementsByTagName("h2")[0].textContent = '"' + levelNames[num] + '"';
         grid.signalsUsed = 0;
         grid.complete = false;
         grid.draw();

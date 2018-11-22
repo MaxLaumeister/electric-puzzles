@@ -1,0 +1,18 @@
+Intro
+Diverters
+Capacitor
+Criss-Cross
+Duplicator
+Infinite Loop
+Battery
+State Machine
+Battery Bank
+
+Component ideas:
+Resistor - slows down a signal
+Diode - allows signal in one direction only
+Fuse - works only once, then burns out
+Filter - lets only one color through
+Auto-switch - switch with a visible timer that switches automatically
+Solar panel - automatically adds signals to puzzle
+Switch - manual flip which way signal goes. Need art or tutorial to make it clear you can interact with it.
