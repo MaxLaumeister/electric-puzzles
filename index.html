@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Max's Electric Puzzles</title>
     <link href="favicon.ico" rel="icon" type="image/x-icon" />
     <link rel="canonical" href="https://www.maxlaumeister.com/electric-puzzles/" />
@@ -15,6 +16,7 @@
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            max-width: 100%;
         }
         .canvaswrap {
             display: inline-block;
@@ -48,7 +50,7 @@
   </div>
   <br>
   <form action="">
-    Signal Color:
+    <b>Signal Color</b><br>
     <input id="rad_red" type="radio" name="color" value="red" checked="checked" onclick="grid.newSignalColor = 'red';">Red
     <input id="rad_green" type="radio" name="color" value="green" onclick="grid.newSignalColor = 'green';">Green
     <input id="rad_blue" type="radio" name="color" value="blue" onclick="grid.newSignalColor = 'blue';">Blue
