@@ -101,7 +101,7 @@
   </table>
   <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
   <p><small>Sound effects CC-BY by <a href="https://freesound.org/people/LittleRobotSoundFactory/packs/16881/">LittleRobotSoundFactory</a>.</small></p>
-    <script src="howler.min.js"></script>
+    <script src="lib/howler.min.js"></script>
     <script>
     let Util = {
         getNextCoord: function (ix, iy, orientation) {
@@ -395,7 +395,7 @@
           }
     }
     Holder.image = new Image();
-    Holder.image.src = "holder.png";
+    Holder.image.src = "image/holder.png";
     
     class Wire2Way extends Component {
         constructor(orientation) {
@@ -428,7 +428,7 @@
           }
     }
     Wire2Way.image = new Image();
-    Wire2Way.image.src = "straight.png";
+    Wire2Way.image.src = "image/straight.png";
     
     class Wire2WayWithSignal extends Wire2Way {
         constructor(orientation, color) {
@@ -459,7 +459,7 @@
           }
     }
     Wire4Way.image = new Image();
-    Wire4Way.image.src = "4way.png";
+    Wire4Way.image.src = "image/4way.png";
     
     class WireBend extends Component {
         constructor(orientation) {
@@ -500,7 +500,7 @@
           }
     }
     WireBend.image = new Image();
-    WireBend.image.src = "elbow.png";
+    WireBend.image.src = "image/elbow.png";
     
     class Duplicator extends Component {
         constructor(orientation) {
@@ -547,7 +547,7 @@
           }
     }
     Duplicator.image = new Image();
-    Duplicator.image.src = "duplicator.png";
+    Duplicator.image.src = "image/duplicator.png";
     
     class WireBendVariant1 extends WireBend {
         //constructor(orientation) {
@@ -572,7 +572,7 @@
           }
     }
     WireBendVariant1.image = new Image();
-    WireBendVariant1.image.src = "elbow-variant.png";
+    WireBendVariant1.image.src = "image/elbow-variant.png";
     
     class WireBendVariant2 extends WireBend {
         //constructor(orientation) {
@@ -598,7 +598,7 @@
           }
     }
     WireBendVariant2.image = new Image();
-    WireBendVariant2.image.src = "elbow-variant.png";
+    WireBendVariant2.image.src = "image/elbow-variant.png";
     
     class WireBendVariant3 extends WireBend {
         //constructor(orientation) {
@@ -623,7 +623,7 @@
           }
     }
     WireBendVariant3.image = new Image();
-    WireBendVariant3.image.src = "elbow-variant3.png";
+    WireBendVariant3.image.src = "image/elbow-variant3.png";
     
     class Diverter extends Component {
         constructor(orientation) {
@@ -674,7 +674,7 @@
           }
     }
     Diverter.image = new Image();
-    Diverter.image.src = "diverter.png";
+    Diverter.image.src = "image/diverter.png";
     
     class Diverter3Way extends Component {
         constructor(orientation) {
@@ -725,9 +725,9 @@
           }
     }
     Diverter3Way.image1 = new Image();
-    Diverter3Way.image1.src = "diverter-3way-1.png";
+    Diverter3Way.image1.src = "image/diverter-3way-1.png";
     Diverter3Way.image2 = new Image();
-    Diverter3Way.image2.src = "diverter-3way-2.png";
+    Diverter3Way.image2.src = "image/diverter-3way-2.png";
 
     class Thrower extends Component {
       constructor(orientation) {
@@ -767,7 +767,7 @@
       }
     }
     Thrower.image = new Image();
-    Thrower.image.src = "thrower.png";
+    Thrower.image.src = "image/thrower.png";
     
     class Catcher extends Component {
       constructor(orientation, colorList) {
@@ -840,9 +840,9 @@
       }
     }
     Catcher.image = new Image();
-    Catcher.image.src = "catcher.png";
+    Catcher.image.src = "image/catcher.png";
     Catcher.imageSat = new Image();
-    Catcher.imageSat.src = "catcher-satisfied.png";
+    Catcher.imageSat.src = "image/catcher-satisfied.png";
 
     class Signal {
       constructor(orientation, color) {
@@ -1030,13 +1030,13 @@
     }
     
     let gamesound = {
-        diverter: new Howl({src:['274203__littlerobotsoundfactory__ui-synth-02-lowpass.wav']}),
-        holder: new Howl({src:['274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav']}),
-        signalReceived: new Howl({src:['274204__littlerobotsoundfactory__ui-synth-01.wav']}),
-        signalRejected: new Howl({src:['274196__littlerobotsoundfactory__ui-electric-05.wav']}),
-        allSignalsReceived: new Howl({src:['274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']}),
-        duplicator: new Howl({src:['274207__littlerobotsoundfactory__ui-synth-04-lowpass.wav']}),
-        holdingTubeRelease: new Howl({src:['19486__halleck__jacobsladdersingle1-edit.wav']})
+        diverter: new Howl({src:['sound/274203__littlerobotsoundfactory__ui-synth-02-lowpass.wav']}),
+        holder: new Howl({src:['sound/274205__littlerobotsoundfactory__ui-synth-00-lowpass.wav']}),
+        signalReceived: new Howl({src:['sound/274204__littlerobotsoundfactory__ui-synth-01.wav']}),
+        signalRejected: new Howl({src:['sound/274196__littlerobotsoundfactory__ui-electric-05.wav']}),
+        allSignalsReceived: new Howl({src:['sound/274183__littlerobotsoundfactory__jingle-win-synth-04-lowpass.wav']}),
+        duplicator: new Howl({src:['sound/274207__littlerobotsoundfactory__ui-synth-04-lowpass.wav']}),
+        holdingTubeRelease: new Howl({src:['sound/19486__halleck__jacobsladdersingle1-edit.wav']})
     };
     
     // Preload sounds
