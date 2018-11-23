@@ -236,7 +236,7 @@
         // super.handleClick(x, y);
         console.log("canvas clicked: (" + x + ", " + y + ")");
         let dx, dy;
-        dx = dy = canvas.width / this.data.length;
+        dx = dy = canvas.clientWidth / this.data.length; // TODO: Do this in resize instead to prevent reflow
         let xCoord = Math.floor(x / dx);
         let yCoord = Math.floor(y / dy);
         let tile = this.getComponent(xCoord, yCoord);
