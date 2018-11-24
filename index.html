@@ -101,6 +101,14 @@
         <td>Level 9</td>
         <td>10</td>
     </tr>
+    <tr>
+        <td>Level 10</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td>Level 11</td>
+        <td>4</td>
+    </tr>
   </table>
   <p><small>Game prototype by <a href="https://www.maxlaumeister.com/">Maximillian Laumeister</a> &bull; <a href="https://github.com/MaxLaumeister/electric-puzzles">Source Code</a></small></p>
   <p><small>Sound effects CC-BY by <a href="https://freesound.org/people/LittleRobotSoundFactory/packs/16881/">LittleRobotSoundFactory</a>.</small></p>
@@ -355,9 +363,9 @@
     }
     
     class Holder extends Component {
-        constructor(orientation) {
-            super(orientation);
-            this.held = null;
+        constructor(heldColor) {
+            super(0);
+            this.held = heldColor ? new Signal(0, heldColor): null;
         }
         
         processSignals() {
@@ -867,7 +875,9 @@
         "Infinite Loop",
         "Battery",
         "State Machine",
-        "Battery Bank"
+        "Battery Bank",
+        "Ignition",
+        "Gimmick"
     ];
     var levelGrids = [
         null,
@@ -903,7 +913,7 @@
           [null, null, new Wire2Way(3), null, new WireBendVariant1(3), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null, null],
           [null, null, new WireBendVariant1(3), new Wire2Way(0), new Diverter(0), new WireBend(2), null, new Wire2Way(3), null, null],
           [null, null, new Wire2Way(3), null, null, new Wire2Way(3), null, new Wire2Way(3), null, null],
-          [null, null, new Holder(0), null, new WireBend(3), new WireBend(1), null, new Wire2Way(3), null, null],
+          [null, null, new Holder(), null, new WireBend(3), new WireBend(1), null, new Wire2Way(3), null, null],
           [null, null, new WireBendVariant1(3), new Wire2Way(0), new Diverter(0), new WireBend(2), null, new Wire2Way(3), null, null],
           [null, null, new Wire2Way(3), null, null, new Catcher(0, ["blue", "red", "green"]), null, new Wire2Way(3), null, null],
           [null, new WireBend(3), new Diverter(0), new WireBend(2), null, null, null, new Wire2Way(3), null, null],
@@ -917,9 +927,9 @@
           [null, null, null, null, new Wire2Way(3), null, null, null, null, null],
           [new WireBend(3), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new Diverter(0), new Wire2Way(0), new Wire2Way(0), new Wire2Way(0), new WireBend(2), null],
           [new Wire2Way(3), null, null, null, null, null, null, new WireBend(3), new Diverter(0), new WireBend(2)],
-          [new WireBend(0), new WireBendVariant2(3), new Wire2Way(0), new Wire2Way(0), new Holder(0), new Wire2Way(0), new Wire2Way(0), new WireBendVariant3(2), new Wire2Way(0), new WireBend(1)],
+          [new WireBend(0), new WireBendVariant2(3), new Wire2Way(0), new Wire2Way(0), new Holder(), new Wire2Way(0), new Wire2Way(0), new WireBendVariant3(2), new Wire2Way(0), new WireBend(1)],
           [null, new Wire2Way(3), null, null, null, null, null, new Wire2Way(3), null, null],
-          [null, new WireBend(0), new WireBendVariant2(3), new Wire2Way(2), new Holder(0), new Wire2Way(2), new WireBendVariant1(2), new WireBend(1), null, null],
+          [null, new WireBend(0), new WireBendVariant2(3), new Wire2Way(2), new Holder(), new Wire2Way(2), new WireBendVariant1(2), new WireBend(1), null, null],
           [null, null, new Catcher(0, ["blue", "red", "green"]), null, null, null, new Catcher(0, ["green", "red"]), null, null, null],
           [null, null, null, null, null, null, null, null, null, null]
         ],
@@ -929,7 +939,7 @@
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, null, new Thrower(3), null, null, new Thrower(3), null, null, null],
           [null, null, null, new Wire2Way(3), null, null, new Wire2Way(3), null, null, null],
-          [null, null, null, new WireBendVariant1(3), new Holder(0), new Wire2Way(0), new Duplicator(0), new WireBend(2), null, null],
+          [null, null, null, new WireBendVariant1(3), new Holder(), new Wire2Way(0), new Duplicator(0), new WireBend(2), null, null],
           [null, null, null, new Wire2Way(3), null, null, new WireBend(3), new WireBend(1), null, null],
           [null, null, null, new Catcher(0, ["red", "green", "red", "green", "blue"]), null, null, new Catcher(0, ["red", "red", "green", "blue"]), null, null, null],
           [null, null, null, null, null, null, null, null, null, null, null],
@@ -967,9 +977,9 @@
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, new Thrower(3), null, null, null, new Thrower(3), null, null, null],
           [null, null, new Wire2Way(3), null, null, null, new Wire2Way(3), null, null, null],
-          [null, new WireBend(3), new Diverter(1), new Wire2Way(0), new Holder(0), new Wire2Way(0), new Diverter(0), new WireBend(2), null, null],
+          [null, new WireBend(3), new Diverter(1), new Wire2Way(0), new Holder(), new Wire2Way(0), new Diverter(0), new WireBend(2), null, null],
           [null, new Wire2Way(3), new WireBend(0), new WireBend(2), null, new WireBend(3), new WireBend(1), new Wire2Way(3), null, null],
-          [new WireBend(3), new Diverter(1), new WireBend(2), new Holder(0), null, new Holder(0), new WireBend(3), new Diverter(0), new WireBend(2), null],
+          [new WireBend(3), new Diverter(1), new WireBend(2), new Holder(), null, new Holder(), new WireBend(3), new Diverter(0), new WireBend(2), null],
           [new Catcher(0, ["red", "red", "green", "blue"]), null, new WireBend(0), new WireBend(1), null, new WireBend(0), new WireBend(1), null, new Catcher(0, ["red", "red", "green", "blue"]), null],
           [null, null, null, null, null, null, null, null, null, null],
           [null, null, null, null, null, null, null, null, null, null],
@@ -987,6 +997,32 @@
           [new Wire2Way(3), new Wire2Way(3), null, null, null, null, null, new Wire2Way(3), new Wire2Way(3), null],
           [new WireBendVariant2(0), new Diverter(1), new WireBend(2), null, null, null, new WireBend(3), new Diverter(0), new WireBendVariant1(1), null],
           [new WireBend(0), new Wire2Way(0), new Diverter(1), new Catcher(0, ["red", "green", "blue"]), null, new Catcher(0, ["blue", "green", "red"]), new Diverter(0), new Wire2Way(0), new WireBend(1), null]
+        ],
+        // Level 10
+        [
+            [null, new Thrower(3), null, null, null, null, null, null, null, null],
+            [null, new Wire2Way(1), null, new WireBend(3), new WireBend(2), null, null, null, null, null],
+            [new WireBend(3), new Holder("black"), new Wire2Way(0), new Holder("black"), new WireBend(1), null, null, null, null, null],
+            [new Wire2Way(1), new Wire2Way(1), null, new Wire2Way(1), null, null, null, null, null, null],
+            [new WireBend(0), new Holder("red"), new Wire2Way(0), new Holder(), new Wire2Way(0), new Catcher(0, ["red", "blue", "green"]), null, null, null, null],
+            [null, new WireBend(0), new Wire2Way(0), new WireBend(1), null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null]
+        ],
+        // Level 11
+        [
+            [null, null, null, null, null, null, null, null, null, null],
+            [null, null, new Thrower(3), null, null, null, null, null, null, null],
+            [null, null, new WireBendVariant1(3), new Wire2Way(0), new WireBend(2), null, null, null, null, null],
+            [null, null, new Holder("red"), null, new Wire2Way(1), null, null, null, null, null],
+            [null, null, new Wire2Way(1), null, new Wire2Way(1), null, null, null, null, null],
+            [null, new WireBend(3), new Diverter(0), new WireBend(2), new Wire2Way(1), null, null, null, null, null],
+            [null, new Catcher(0, ["blue", "red", "blue","red"]), new WireBend(3), new Duplicator(0), new WireBend(1), null, null, null, null, null],
+            [null, null, new Catcher(0, ["green", "green", "green"]), null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null, null],
         ]
     ];
     
