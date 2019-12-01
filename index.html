@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Max's Electric Puzzles</title>
+    <title>Electric Puzzles - Maximillian Laumeister</title>
     <link href="favicon.ico" rel="icon" type="image/x-icon" />
     <link rel="canonical" href="https://www.maxlaumeister.com/electric-puzzles/" />
-    <meta name="description" content="An in-browser puzzle game about electrical signals and circuits.">
+    <meta name="description" content="An prototype puzzle game about electrical signals and circuits.">
     <style>
         body {
             text-align: center;
@@ -56,12 +56,10 @@
             margin: 30px auto;
         }
         h1 {
-            margin: 0;
-            margin-top: 0.5em;
+            margin: 0.5em 0;
         }
-        h2 {
+        h2, h3 {
             margin: 0;
-            margin-bottom: 0.5em;
         }
     </style>
     <script>
@@ -76,8 +74,9 @@
     </script>
   </head>
   <body>
-  <h1>Level ?</h1>
-  <h2>[level description]</h2>
+  <h1>Electric Puzzles</h1>
+  <h2 id="levelnum">Level ?</h2>
+  <h3 id="leveldesc">[level description]</h3>
   <div class="canvaswrap">
     <canvas height="500" width="500"></canvas>
   </div>
@@ -1099,8 +1098,8 @@
     function changeToLevel(num) {
         currentLevel = num;
         grid.loadData(levelGrids[num]);
-        document.getElementsByTagName("h1")[0].textContent = "Level " + num;
-        document.getElementsByTagName("h2")[0].textContent = '"' + levelNames[num] + '"';
+        document.getElementById("levelnum").textContent = "Level " + num;
+        document.getElementById("leveldesc").textContent = '"' + levelNames[num] + '"';
         grid.signalsUsed = 0;
         grid.complete = false;
         grid.draw();
