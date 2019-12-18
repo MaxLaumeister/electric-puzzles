@@ -7,6 +7,19 @@
     <link href="favicon.ico" rel="icon" type="image/x-icon" />
     <link rel="canonical" href="https://www.maxlaumeister.com/electric-puzzles/" />
     <meta name="description" content="An prototype puzzle game about electrical signals and circuits.">
+    <script>
+      // If there is no trailing slash after the path in the url, add it
+      // Workaround for Netlify trailing-slash redirect issue
+      // https://community.netlify.com/t/bug-in-non-trailing-slash-rewrite/452/23
+      if (!window.location.pathname.endsWith('/') && !window.location.pathname.split("/").pop().includes(".")) {
+          var url = window.location.protocol + '//' +
+                  window.location.host +
+                  window.location.pathname + '/' +
+                  window.location.search;
+
+          window.history.replaceState(null, document.title, url);
+      }
+    </script>
     <style>
         body {
             text-align: center;
